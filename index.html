@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><title>Nexia Launcher</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' https: data:; style-src 'unsafe-inline'; script-src 'unsafe-inline'">
+<style>
+:root{--w:#f4f4f2;--m:#808080;--d:#4a4a4a;--l:#ffffff14;--e:cubic-bezier(.2,.7,.2,1);--mx:50%;--my:30%}
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-user-drag:none;cursor:default}
+input{-webkit-user-select:text;user-select:text;cursor:text}button,a{cursor:pointer}
+body{margin:0;height:100vh;background:#050505;color:var(--w);font:13px "Segoe UI",system-ui,"Noto Sans Thai",sans-serif;overflow:hidden;position:relative}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(520px circle at var(--mx) var(--my),#ffffff12,#0000 65%),radial-gradient(#ffffff17 1px,#0000 1.2px) 0 0/24px 24px;-webkit-mask-image:radial-gradient(ellipse at 50% 40%,#000 25%,#0004 90%);mask-image:radial-gradient(ellipse at 50% 40%,#000 25%,#0004 90%)}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.05;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence baseFrequency='.9' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
+.hide{display:none!important}.mu{color:var(--m)}
+@keyframes up{from{opacity:0;transform:translateY(14px)}}@keyframes pl{50%{opacity:.3}}
+/* login */
+#login{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center}
+.lc{width:372px;padding:40px 34px 28px;text-align:center;border:1px solid var(--l);border-radius:20px;background:linear-gradient(180deg,#101010cc,#080808cc);backdrop-filter:blur(14px);box-shadow:0 30px 80px #000c,inset 0 1px #ffffff12;animation:up .8s var(--e) both}
+.lc img{width:58px;filter:drop-shadow(0 0 18px #fff6)}.lc h1{margin:18px 0 6px;font:300 22px inherit;letter-spacing:.7em;text-indent:.7em}
+.lc p{margin:0 0 26px;color:var(--m);line-height:1.6}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--w);background:var(--w);color:#000;border-radius:10px;padding:12px 22px;font:600 13px inherit;transition:all .25s var(--e)}
+.btn:hover{background:#000;color:var(--w);box-shadow:0 0 30px #fff3}.btn:disabled{opacity:.35;pointer-events:none}.btn svg{width:17px;height:17px;fill:currentColor}
+.btn.o{background:none;color:var(--w);border-color:#ffffff30}.btn.o:hover{background:var(--w);color:#000}.btn.s{padding:7px 14px;font-size:12px}
+.lc .btn{width:100%;padding:13px}
+#lerr{min-height:18px;margin-top:14px;font-size:12px;color:#ddd;line-height:1.5}
+.ft{margin-top:20px;padding-top:16px;border-top:1px solid var(--l);display:flex;justify-content:center;gap:14px;font-size:10px;letter-spacing:.22em;color:var(--d);text-transform:uppercase}
+/* app */
+#app{position:fixed;inset:0;display:flex}
+aside{width:212px;flex:none;border-right:1px solid var(--l);background:#070707e6;display:flex;flex-direction:column;padding:20px 14px}
+.br{display:flex;align-items:center;gap:11px;padding:0 8px 22px}.br img{width:26px}.br b{font:300 14px inherit;letter-spacing:.5em}
+.nv{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:transparent;border:1px solid transparent;color:var(--w);font:13px inherit;text-align:left;cursor:pointer;transition:background .2s,border-color .2s}.nv:hover{background:#ffffff08;border-color:#ffffff15}.nv.navactive{background:#ffffff0d;border-color:var(--l)}.nv i{flex:1}.nv small{color:var(--m);font-size:11px}
+.sp{flex:1}
+#acc{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid var(--l);border-radius:12px;background:#0b0b0b}
+#acc img{width:32px;height:32px;border-radius:50%;filter:grayscale(1)}#acc div{flex:1;min-width:0}#acc span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+#acc button{background:none;border:0;color:var(--m);font:11px inherit;padding:0}#acc button:hover{color:var(--w)}
+#ver{margin-top:12px;text-align:center;font-size:9px;letter-spacing:.4em;color:var(--d)}
+section.ct{flex:1;min-width:0;display:flex;flex-direction:column}
+#upd{display:none;background:var(--w);color:#000;padding:8px 24px;font-size:12px}#upd a{margin-left:12px;text-decoration:underline;font-weight:600}
+header{padding:26px 30px 8px;display:flex;align-items:flex-end;gap:12px}header div{flex:1}header h2{margin:0;font:600 22px inherit;letter-spacing:.02em}header p{margin:5px 0 0;color:var(--m)}
+main{flex:1;overflow:auto;padding:18px 30px 16px}
+#ilist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.inst{position:relative;padding:18px;border-radius:16px;border:1px solid var(--l);background:linear-gradient(170deg,#121212,#0a0a0a);overflow:hidden;animation:up .6s var(--e) both;transition:border-color .25s,transform .25s var(--e)}
+.inst:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(260px circle at var(--x,50%) var(--y,0),#ffffff14,#0000 70%)}
+.inst:hover{border-color:#ffffff38;transform:translateY(-2px)}.inst:hover:before{opacity:1}
+.top{display:flex;gap:13px;align-items:center;margin-bottom:12px}
+.mono{width:46px;height:46px;flex:none;border-radius:12px;display:grid;place-items:center;font:600 20px inherit;background:linear-gradient(145deg,#2a2a2a,#0d0d0d);border:1px solid #ffffff22;box-shadow:inset 0 1px #ffffff18}
+.top h3{margin:0 0 6px;font:600 15px inherit}.tags{display:flex;gap:6px;flex-wrap:wrap}.tags span{border:1px solid #ffffff1f;border-radius:20px;padding:2px 9px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#b8b8b8}
+.desc{color:var(--m);line-height:1.6;min-height:42px;margin-bottom:14px}
+.row{display:flex;align-items:center;gap:8px;position:relative}.st2{flex:1;font-size:11px;color:var(--m);display:flex;align-items:center;gap:7px;min-width:0}
+.dot{width:7px;height:7px;border-radius:50%;background:#444;flex:none}.dot.ok{background:var(--w);box-shadow:0 0 9px #fffa}.dot.up{background:none;border:1px solid var(--w);animation:pl 1.4s infinite}
+.ram{width:70px;background:#050505;border:1px solid #ffffff1c;border-radius:9px;color:var(--w);padding:8px;font:12px inherit;text-align:right;transition:.2s}.ram:focus{outline:none;border-color:var(--w)}
+.row .btn{padding:8px 16px;font-size:12px}
+.sk{height:176px;border-radius:16px;border:1px solid var(--l);background:linear-gradient(100deg,#0a0a0a 30%,#161616 50%,#0a0a0a 70%) 0 0/300% 100%;animation:sh 1.6s infinite}@keyframes sh{to{background-position:-300% 0}}
+.card{grid-column:1/-1;padding:24px;border-radius:16px;border:1px solid var(--l);background:#0a0a0a;line-height:1.8;max-width:520px}
+#foot{flex:none;margin:0 30px 20px;padding:11px 16px;border:1px solid var(--l);border-radius:14px;background:#0a0a0acc;display:flex;align-items:center;gap:14px}
+#st{flex:1;font-size:12px;color:var(--m);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#st.er,#st.ok{color:var(--w)}
+.bar{width:200px;height:3px;border-radius:3px;background:#1d1d1d;overflow:hidden}.bar i{display:block;height:100%;width:0;border-radius:3px;background:var(--w);box-shadow:0 0 10px #fff9;transition:width .2s}#pc{width:34px;text-align:right;font-size:11px;color:var(--m)}
+.lc small{display:block;margin:-2px 0 16px;font-size:10px;letter-spacing:.9em;text-indent:.9em;color:var(--m)}
+.row2{display:flex;gap:8px;margin-top:10px}.row2 .btn{padding:6px 12px;font-size:11px}
+.new{padding:2px 9px!important;border-color:var(--w)!important;color:var(--w)!important}
+#mdl{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;background:#000a;backdrop-filter:blur(6px)}
+.mb{width:470px;max-width:92vw;max-height:92vh;overflow:auto;padding:26px;border:1px solid #ffffff2a;border-radius:18px;background:linear-gradient(180deg,#121212,#080808);box-shadow:0 30px 80px #000c;animation:up .4s var(--e) both}
+.mb h3{margin:0 0 16px;font:600 17px inherit}.mb label{display:block;margin:12px 0 6px;font-size:11px;color:var(--m);letter-spacing:.06em}
+.mb input,.mb select,.mb textarea{width:100%;background:#050505;border:1px solid #ffffff1c;border-radius:9px;color:var(--w);padding:9px 10px;font:13px inherit}.mb textarea{resize:vertical;min-height:56px;max-height:120px;-webkit-user-select:text;user-select:text;cursor:text}.mb select{cursor:pointer}.mb select option{background:#050505}
+.mb input:focus,.mb select:focus,.mb textarea:focus{outline:none;border-color:var(--w)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#c-err{min-height:18px;margin-top:12px;font-size:12px;color:#ddd}.ma{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
+/* Instance artwork + Library */
+.inst-banner{display:block;width:calc(100% + 36px);height:86px;object-fit:cover;margin:-18px -18px 14px;border-bottom:1px solid #ffffff18;background:#0a0a0a}
+.inst-visuals{display:flex;align-items:center;gap:9px;flex:none}
+.inst-cover{width:46px;height:46px;object-fit:cover;border-radius:10px;border:1px solid #ffffff22;background:#080808;flex:none}
+.mono img{width:100%;height:100%;object-fit:cover;border-radius:11px}.mono:has(img){padding:0;overflow:hidden}
+#library-page{min-height:100%;}
+.lib-controls{position:sticky;top:-18px;z-index:4;padding:0 0 14px;background:linear-gradient(#050505 85%,#05050500)}
+.searchline{display:flex;gap:9px;margin-bottom:12px}
+.searchline input,.lib-filter input,.lib-filter select{min-width:0;width:100%;background:#090909;border:1px solid #ffffff20;color:var(--w);border-radius:10px;padding:10px 12px;font:13px inherit;outline:none}
+.searchline input:focus,.lib-filter input:focus,.lib-filter select:focus{border-color:#ffffff70}
+.lib-filter{display:grid;grid-template-columns:1fr 1.1fr .8fr 1fr;gap:10px;margin-bottom:10px}
+.lib-filter label{display:block;min-width:0;color:var(--m);font-size:10px;letter-spacing:.04em}
+.lib-filter input,.lib-filter select{display:block;margin-top:5px}
+.lib-target-row{display:flex;align-items:end;gap:10px;margin-bottom:10px}
+.lib-target-row label{display:block;flex:1;min-width:0;color:var(--m);font-size:10px;letter-spacing:.04em}
+.lib-target-row select{display:block;width:100%;margin-top:5px;background:#090909;border:1px solid #ffffff20;color:var(--w);border-radius:10px;padding:10px 12px;font:13px inherit}
+.lib-status{font-size:11px;color:var(--m);margin:10px 0 14px;min-height:18px;line-height:1.6}
+.project-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;padding-bottom:20px}
+.project-card{position:relative;min-width:0;overflow:hidden;border:1px solid var(--l);border-radius:15px;background:linear-gradient(170deg,#121212,#080808);animation:up .35s var(--e) both;transition:border-color .2s,transform .2s}
+.project-card:hover{border-color:#ffffff40;transform:translateY(-2px)}
+.project-banner{display:block;width:100%;height:96px;object-fit:cover;background:#0b0b0b;border-bottom:1px solid #ffffff12}
+.project-head{display:flex;align-items:center;gap:10px;padding:13px 14px 0;min-width:0}
+.project-cover{width:42px;height:42px;flex:none;object-fit:cover;border-radius:10px;border:1px solid #ffffff22;background:#050505}
+.project-heading{min-width:0;flex:1}.project-heading h3{font-size:13px;line-height:1.4;margin:0 0 5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.project-meta{display:flex;flex-wrap:wrap;gap:5px}.project-meta span{font-size:9px;color:#b7b7b7;border:1px solid #ffffff1c;border-radius:12px;padding:2px 7px}
+.project-desc{padding:10px 14px 0;color:#a3a3a3;font-size:11px;line-height:1.6;min-height:47px;max-height:64px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical}
+.project-stats{padding:10px 14px 0;color:#707070;font-size:10px;display:flex;justify-content:space-between;gap:6px}
+.project-actions{display:flex;gap:8px;padding:12px 14px 14px}.project-actions .btn{flex:1;padding:8px 9px;font-size:11px}.project-actions .btn.o{border-color:#ffffff20}
+.lib-empty{grid-column:1/-1;padding:30px;border:1px dashed #ffffff25;border-radius:14px;color:var(--m);text-align:center;line-height:1.8}
+@media(max-width:1000px){.lib-filter{grid-template-columns:1fr 1fr}.project-grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}}
+@media(max-height:680px){.lib-controls{position:relative;top:0}}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:#262626;border-radius:8px}
+
+/* cover-first home and instance detail */
+#app-header{flex:none}
+#ilist{grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:14px;align-content:start}
+.inst{padding:0;min-height:0;border-radius:14px;cursor:pointer;aspect-ratio:1.48;isolation:isolate}
+.inst:before{z-index:1}
+.inst-art{position:absolute;inset:0;overflow:hidden;background:linear-gradient(140deg,#252525,#080808);}
+.inst-art img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .45s var(--e);-webkit-user-drag:none}
+.inst:hover .inst-art img{transform:scale(1.045)}
+.inst-art:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#030303ed 0%,#03030380 38%,#0000 78%)}
+.inst-caption{position:absolute;z-index:2;left:16px;right:16px;bottom:15px;pointer-events:none}
+.inst-caption h3{margin:0 0 7px;font-size:15px;font-weight:750;line-height:1.3;text-shadow:0 2px 8px #000}
+.inst-caption .tags{display:flex;gap:5px;flex-wrap:wrap}.inst-caption .tags span{background:#0505058c;border-color:#ffffff2a;color:#eee}
+.inst-hover-tools{position:absolute;z-index:3;top:10px;right:10px;display:flex;gap:6px;opacity:0;transform:translateY(-3px);transition:.18s;}
+.inst:hover .inst-hover-tools,.inst:focus-within .inst-hover-tools{opacity:1;transform:none}
+.icon-btn{width:34px;height:34px;display:grid;place-items:center;border:1px solid #ffffff35;border-radius:9px;background:#080808b8;color:#fff;backdrop-filter:blur(10px);cursor:pointer}
+.icon-btn:hover{background:#fff;color:#000}.icon-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8}
+.inst-drop-hint{position:absolute;z-index:4;inset:0;display:grid;place-items:center;padding:16px;background:#000b;border:2px dashed #eee;opacity:0;pointer-events:none;transition:opacity .15s;text-align:center;font-size:12px;letter-spacing:.03em}
+.inst.drop-ready .inst-drop-hint{opacity:1}
+#instance-detail{min-height:100%;animation:up .25s var(--e) both}
+.detail-backrow{display:flex;align-items:center;gap:8px;margin:0 0 14px}
+.detail-back{background:#141414;border:1px solid #ffffff22;color:#eee;border-radius:9px;padding:8px 14px;font:600 11px inherit;letter-spacing:.08em}
+.detail-back:hover{background:#242424}
+.detail-hero{position:relative;min-height:205px;overflow:hidden;border:1px solid #ffffff1c;border-radius:15px;background:#0a0a0a;isolation:isolate}
+.detail-banner{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.56;filter:saturate(.76);z-index:0}.detail-hero:before{z-index:1}.detail-hero-inner{position:relative;z-index:2}
+.detail-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#080808f2 0%,#080808cf 48%,#08080845 100%),linear-gradient(0deg,#050505b0,transparent 65%);z-index:-1;pointer-events:none}
+.detail-hero.drag-ready{outline:2px dashed #eee;outline-offset:-8px}.detail-hero.drag-ready .inst-drop-hint{opacity:1}
+.detail-hero-inner{display:flex;align-items:end;gap:15px;padding:24px;min-height:205px}
+.detail-cover{width:74px;height:74px;flex:none;border:1px solid #ffffff3d;border-radius:13px;object-fit:cover;background:#171717;box-shadow:0 12px 30px #0008}
+.detail-title-group{flex:1;min-width:0;padding-bottom:2px}
+.detail-title-group h2{margin:0 0 10px;font-size:clamp(17px,2vw,24px);font-weight:800;letter-spacing:-.025em;overflow-wrap:anywhere}
+.detail-meta{display:flex;flex-wrap:wrap;gap:7px;color:#bbb;font:11px ui-monospace,Consolas,monospace}
+.detail-meta span{background:#06060678;border:1px solid #ffffff20;border-radius:6px;padding:4px 7px}
+.detail-actions{display:flex;gap:8px;align-items:center;flex:none}
+.detail-actions .btn{min-width:56px;padding:10px 14px}.play-btn{min-width:104px!important;font-size:12px!important;letter-spacing:.09em}
+.detail-tabs{display:flex;gap:25px;align-items:center;border-bottom:1px solid #ffffff22;margin:15px 0 0;padding:0 2px;overflow:auto;white-space:nowrap}
+.detail-tab{position:relative;padding:12px 4px 11px;color:#8b8b8b;border:0;background:transparent;font:12px inherit;cursor:pointer}
+.detail-tab.active{color:#fff;font-weight:700}.detail-tab.active:after{content:"";position:absolute;bottom:-1px;left:0;right:0;height:2px;background:#fff;border-radius:2px}
+.detail-tab span{margin-left:6px;color:#777;font-size:10px}
+#detail-content{padding:20px 0 8px}
+.detail-section-title{display:flex;align-items:center;gap:9px;font-size:12px;letter-spacing:.13em;font-weight:750;margin:0 0 12px;text-transform:uppercase}
+.detail-desc{font-size:12px;line-height:1.9;color:#c8c8c8;white-space:pre-wrap;overflow-wrap:anywhere;margin:0 0 22px;max-width:1200px}
+.detail-info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.info-item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 15px;border-radius:10px;background:#171719;border:1px solid #ffffff08;font-size:11px;color:#8f8f8f}
+.info-item strong{color:#f0f0f0;font:12px ui-monospace,Consolas,monospace;text-align:right;overflow-wrap:anywhere}
+.detail-file-toolbar{display:flex;align-items:center;gap:8px;margin:0 0 12px;flex-wrap:wrap}
+.detail-file-toolbar .muted{flex:1;color:#888;font-size:11px;min-width:180px}
+.detail-file-list{display:flex;flex-direction:column;gap:6px}
+.detail-file{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid #ffffff12;background:#101010;border-radius:9px;min-width:0}
+.detail-file .file-symbol{color:#777;font:12px ui-monospace,Consolas,monospace}
+.detail-file .file-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:#ddd}
+.detail-file .file-size{color:#717171;font-size:10px;white-space:nowrap}
+.detail-empty{padding:24px;border:1px dashed #ffffff22;border-radius:12px;color:#858585;text-align:center;line-height:1.8}
+.modal-shell{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:22px;background:#000c;backdrop-filter:blur(8px)}
+.modal-box{width:min(650px,95vw);max-height:90vh;overflow:hidden;display:flex;flex-direction:column;border:1px solid #ffffff25;border-radius:15px;background:#0b0b0d;box-shadow:0 30px 100px #000d;animation:up .2s var(--e) both}
+.modal-head{display:flex;align-items:center;gap:12px;padding:17px 20px;border-bottom:1px solid #ffffff16}
+.modal-head h3{margin:0;flex:1;font-size:13px;letter-spacing:.1em;text-transform:uppercase}
+.modal-body{padding:20px;overflow:auto}
+.setting-label{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#999;font-size:11px;margin-bottom:12px}
+.setting-label strong{color:#fff;font:700 14px ui-monospace,Consolas,monospace}
+#s-ram{width:100%;accent-color:#eee;cursor:pointer}
+.setting-note{font-size:11px;line-height:1.8;color:#858585;margin:12px 0 20px}
+.settings-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.settings-actions .danger{margin-left:auto;border-color:#6f2929;color:#e9b5b5}
+#log-box{height:min(54vh,430px);overflow:auto;padding:12px;background:#030303;border:1px solid #ffffff14;border-radius:10px;font:11px/1.75 ui-monospace,Consolas,monospace;color:#c6c6c6;white-space:pre-wrap;overflow-wrap:anywhere}
+.log-line{display:block;border-bottom:1px solid #ffffff07;padding:2px 0}.log-line .time{color:#5f5f5f;margin-right:10px}.log-line.info{color:#c8c8c8}.log-line.game{color:#9ea9b8}.log-line.ok{color:#bce6c2}.log-line.err{color:#f2a6a6}
+.log-foot{display:flex;align-items:center;gap:10px;padding:12px 20px;border-top:1px solid #ffffff14}.log-foot span{flex:1;color:#777;font-size:10px}
+#art-icon-file,#art-banner-file,#c-icon-file,#c-banner-file{display:none}
+.rename-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin-bottom:20px}
+.rename-row label{display:block;color:var(--m);font-size:11px;margin-bottom:6px}
+.rename-row input{width:100%;background:#050505;border:1px solid #ffffff1c;border-radius:9px;color:var(--w);padding:10px;font:13px inherit}
+.image-upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:2px}
+.image-upload-field{min-width:0;padding:12px;border:1px solid #ffffff14;border-radius:11px;background:#ffffff04}
+.image-upload-field label{display:block;margin:0 0 8px;color:#b7b7b7;font-size:11px}
+.upload-meta{display:flex;align-items:center;gap:8px;margin-top:8px;color:#777;font-size:10px;overflow-wrap:anywhere}
+.upload-meta span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.settings-artwork{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.settings-artwork .btn{flex:1;min-width:130px}
+@media(max-width:1120px){#ilist{grid-template-columns:repeat(auto-fill,minmax(205px,1fr))}.detail-hero-inner{padding:18px}.detail-actions{gap:5px}.detail-actions .btn{padding:9px 10px}}
+@media(max-width:760px){.detail-hero-inner{align-items:flex-start;flex-wrap:wrap}.detail-actions{width:100%;justify-content:flex-end}.detail-info-grid{grid-template-columns:1fr}.detail-cover{width:58px;height:58px}}
+
+</style></head><body>
+<div id="upd"></div>
+
+<section id="login" class="hide"><div class="lc">
+  <img src="assets/mark.png" alt=""><h1>NEXIA</h1><small>LAUNCHER</small>
+  <p>เข้าสู่ระบบเพื่อติดตั้ง Instance<br>และอัปเดต mod ของคุณ</p>
+  <button class="btn" id="btn-login"><svg viewBox="0 0 24 24"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.2.5a18 18 0 0 1 4.3 2.1 14.6 14.6 0 0 0-14.9 0A18 18 0 0 1 8.9 3.5L8.6 3a19.8 19.8 0 0 0-4.9 1.4C.6 9 0 13.5.3 18a19.9 19.9 0 0 0 6 3l1.3-2.1a13 13 0 0 1-2-1l.5-.4a14.2 14.2 0 0 0 12.1 0l.5.4a13 13 0 0 1-2 1l1.3 2.1a19.9 19.9 0 0 0 6-3c.4-5.2-.7-9.7-3.7-13.6ZM8.5 15.3c-1.2 0-2.1-1.1-2.1-2.4s.9-2.4 2.1-2.4 2.1 1.1 2.1 2.4-.9 2.4-2.1 2.4Zm7 0c-1.2 0-2.1-1.1-2.1-2.4s.9-2.4 2.1-2.4 2.1 1.1 2.1 2.4-.9 2.4-2.1 2.4Z"/></svg><span id="lbl">เข้าสู่ระบบด้วย Discord</span></button>
+  <div id="lerr"></div><div class="ft"><span>Fabric</span><span>Forge</span><span>Mods</span></div>
+</div></section>
+
+<div id="app" class="hide">
+  <aside><div class="br"><img src="assets/mark.png" alt=""><b>NEXIA</b></div>
+    <button class="nv navactive" id="nav-instances"><span>Instances</span><i></i><small id="cnt"></small></button>
+    <button class="nv" id="nav-library"><span>Library</span><i></i><small>MODS</small></button>
+    <div class="sp"></div><div id="acc"></div><div id="ver"></div></aside>
+  <section class="ct">
+    <header id="app-header"><div><h2 id="page-title">Instances</h2><p id="page-subtitle">เลือก Instance จากปกของคุณ คลิกเพื่อดูรายละเอียด</p></div><button class="btn s" id="cr">+ สร้าง Instance</button><button class="btn o s" id="rf">รีเฟรช</button></header>
+    <main>
+      <div id="instances-page">
+        <div id="ilist"></div>
+        <section id="instance-detail" class="hide">
+          <div class="detail-backrow"><button class="detail-back" id="detail-back">← BACK</button><span class="mu" style="font-size:10px">INSTANCE DETAILS</span></div>
+          <div class="detail-hero" id="detail-hero">
+            <img id="detail-banner" class="detail-banner" alt="">
+            <div class="detail-hero-inner">
+              <img id="detail-cover" class="detail-cover" alt="">
+              <div class="detail-title-group"><h2 id="detail-name">Instance</h2><div id="detail-meta" class="detail-meta"></div></div>
+              <div class="detail-actions">
+                <button class="btn o" id="detail-settings" title="ตั้งค่า RAM และจัดการ Instance">⚙</button>
+                <button class="btn o" id="detail-logs" title="ดู Log">&gt;_</button>
+                <button class="btn play-btn" id="detail-play">▷ PLAY</button>
+              </div>
+            </div>
+            <div class="inst-drop-hint" id="detail-drop-hint">ลากรูปลงบนพื้นที่ Banner เพื่อเปลี่ยน Banner หรือวางบน Icon เพื่อเปลี่ยน Icon</div>
+          </div>
+          <nav class="detail-tabs" id="detail-tabs">
+            <button class="detail-tab active" data-tab="info">Info</button>
+            <button class="detail-tab" data-tab="mods">Mods <span id="detail-count-mods">0</span></button>
+            <button class="detail-tab" data-tab="resourcepacks">Resourcepacks <span id="detail-count-resourcepacks">0</span></button>
+            <button class="detail-tab" data-tab="shaders">Shaders <span id="detail-count-shaders">0</span></button>
+          </nav>
+          <div id="detail-content"></div>
+        </section>
+      </div>
+      <div id="library-page" class="hide">
+        <div class="lib-controls">
+          <div class="searchline"><input id="lib-q" maxlength="120" placeholder="ค้นหา Mod, Resource Pack หรือ Shader บน Modrinth..."><button class="btn" id="lib-search">ค้นหา</button></div>
+          <div class="lib-filter" style="grid-template-columns:1fr 1fr 1fr">
+            <label>ประเภท<select id="lib-type"><option value="mods">Mods / Libraries</option><option value="resourcepacks">Resource Packs</option><option value="shaders">Shaders</option></select></label>
+            <label>Minecraft<input id="lib-mc" value="1.20.1" maxlength="12" placeholder="1.20.1"></label>
+            <label>Loader<select id="lib-loader"><option value="any">Any</option><option value="fabric">Fabric</option><option value="forge">Forge</option><option value="neoforge">NeoForge</option><option value="quilt">Quilt</option></select></label>
+          </div>
+          <div class="lib-target-row"><label>ติดตั้งลง Instance<select id="lib-target"><option value="">โหลดรายการ Instance...</option></select></label><button class="btn o s hide" id="lib-delete-instance">ลบ Instance ที่เลือก</button><button class="btn o s" id="lib-refresh">รีเฟรชรายการ</button></div>
+        </div>
+        <div id="lib-status" class="lib-status">เลือกประเภทและกดค้นหา เพื่อดูรายการจาก Modrinth</div>
+        <div id="lib-results" class="project-grid"></div><div style="display:flex;justify-content:center;padding:0 0 24px"><button class="btn o hide" id="lib-more">โหลดเพิ่มอีก 100 รายการ</button></div>
+      </div>
+    </main>
+    <div id="foot"><div id="st"></div><div class="bar"><i id="bar"></i></div><div id="pc"></div></div>
+  </section>
+</div>
+<div id="mdl" class="hide"><div class="mb">
+  <h3>สร้าง Instance ใหม่</h3>
+  <label>ชื่อ Instance</label><input id="c-name" maxlength="40" placeholder="เช่น Survival กับเพื่อน">
+  <div class="g2"><div><label>เวอร์ชัน Minecraft</label><select id="c-mc"></select></div>
+  <div><label>Loader</label><select id="c-ld"><option value="fabric">Fabric</option><option value="forge">Forge</option><option value="vanilla">Vanilla</option></select></div></div>
+  <div id="c-lvw"><label>เวอร์ชันของ Loader</label><select id="c-lv"></select></div>
+  <label>RAM (MB)</label><input id="c-ram" type="number" min="1024" step="512" value="4096">
+  <label>Description / คำอธิบาย (ไม่บังคับ)</label><textarea id="c-desc" maxlength="400" rows="2" placeholder="คำอธิบาย Instance"></textarea>
+  <div class="g2"><div><label>Icon URL (ไม่บังคับ)</label><input id="c-icon" maxlength="2048" placeholder="https://..."></div><div><label>Banner URL (ไม่บังคับ)</label><input id="c-banner" maxlength="2048" placeholder="https://..."></div></div>
+  <div class="image-upload-grid">
+    <div class="image-upload-field"><label>ICON — ภาพสี่เหลี่ยม</label><button type="button" class="btn o s" id="c-icon-upload">เลือกไฟล์ Icon</button><div class="upload-meta"><span id="c-icon-name">ยังไม่ได้เลือกไฟล์</span></div><input id="c-icon-file" type="file" accept="image/png,image/jpeg,image/webp"></div>
+    <div class="image-upload-field"><label>BANNER — ภาพแนวนอน</label><button type="button" class="btn o s" id="c-banner-upload">เลือกไฟล์ Banner</button><div class="upload-meta"><span id="c-banner-name">ยังไม่ได้เลือกไฟล์</span></div><input id="c-banner-file" type="file" accept="image/png,image/jpeg,image/webp"></div>
+  </div>
+  <div id="c-err"></div>
+  <div class="ma"><button class="btn o s" id="c-cancel">ยกเลิก</button><button class="btn s" id="c-ok">สร้าง</button></div>
+</div></div>
+<input id="art-icon-file" type="file" accept="image/png,image/jpeg,image/webp">
+<input id="art-banner-file" type="file" accept="image/png,image/jpeg,image/webp">
+<div id="settings-modal" class="modal-shell hide"><div class="modal-box">
+  <div class="modal-head"><h3>Instance Settings</h3><button class="icon-btn" id="s-close" aria-label="ปิด">×</button></div>
+  <div class="modal-body">
+    <div class="rename-row"><div><label for="s-name">ชื่อ Instance</label><input id="s-name" maxlength="40" placeholder="ชื่อ Instance"></div><button class="btn o s" id="s-rename">บันทึกชื่อ</button></div>
+    <div class="setting-label"><label for="s-ram">จัดสรร RAM ให้ Minecraft</label><strong id="s-ram-label">4 GB</strong></div>
+    <input id="s-ram" type="range" min="1024" max="8192" step="512" value="4096">
+    <div class="setting-note" id="s-ram-note">RAM ที่แนะนำขึ้นอยู่กับจำนวนมอดและ RAM ทั้งหมดในเครื่อง ค่าใหม่จะเขียนลงโปรไฟล์เมื่อกด PLAY</div>
+    <div class="settings-artwork"><button class="btn o s" id="s-change-icon">อัปโหลด Icon</button><button class="btn o s" id="s-change-banner">อัปโหลด Banner</button><button class="btn o s" id="s-reset-icon">คืน Icon เดิม</button><button class="btn o s" id="s-reset-banner">คืน Banner เดิม</button></div>
+    <div class="settings-actions"><button class="btn s" id="s-save">บันทึก RAM</button><button class="btn o s danger hide" id="s-delete">ลบ Instance</button></div>
+    <div id="s-error" class="setting-note" style="color:#e99;min-height:16px;margin-bottom:0"></div>
+  </div>
+</div></div>
+<div id="log-modal" class="modal-shell hide"><div class="modal-box">
+  <div class="modal-head"><h3>Console / Startup Log</h3><span id="log-state" class="mu" style="font-size:10px">READY</span><button class="icon-btn" id="log-close" aria-label="ปิด">×</button></div>
+  <div class="modal-body"><div id="log-box" role="log" aria-live="polite"></div></div>
+  <div class="log-foot"><span id="log-foot-status">Log จะแสดงการติดตั้ง ตรวจสอบบัญชี Microsoft และเปิดเกมโดยตรง</span><button class="btn o s" id="mc-signout">เปลี่ยนบัญชี Microsoft</button><button class="btn o s" id="log-copy">คัดลอก Log</button><button class="btn s" id="log-clear">ล้าง Log</button></div>
+</div></div>
+<script>
+const N=window.nexia,$=id=>document.getElementById(id),clean=e=>String(e?.message||e).replace(/^Error invoking remote method '[^']+': (Error: )?/,'');
+document.addEventListener('mousemove',e=>{document.body.style.setProperty('--mx',e.clientX+'px');document.body.style.setProperty('--my',e.clientY+'px')});
+['copy','cut','contextmenu','selectstart'].forEach(name=>document.addEventListener(name,e=>{if(!['INPUT','TEXTAREA'].includes(e.target.tagName))e.preventDefault()}));
+const st=(text,cls='')=>{$('st').textContent=text;$('st').className=cls},bar=r=>{const p=Math.max(0,Math.min(100,Math.round(r*100)));$('bar').style.width=p+'%';$('pc').textContent=p?p+'%':''};
+let busy=false,currentPage='instances',latestInstances=[],selectedInstance=null,currentDetailTab='info',detailFiles={mods:[],resourcepacks:[],shaders:[]},libraryLoadedOnce=false,libraryInstalling=false,librarySearching=false,searchOffset=0,searchTotal=0,artworkTargetId='',createIconFile=null,createBannerFile=null,logCount=0;
+const setBusy=v=>{busy=v;$('rf').disabled=v;$('cr').disabled=v;$('detail-play').disabled=v;document.querySelectorAll('.inst-hover-tools button').forEach(b=>b.disabled=v)};
+const nowTime=()=>new Date().toLocaleTimeString('th-TH',{hour12:false});
+function logLine(message,level='info'){
+  const text=String(message??'');const box=$('log-box');const line=document.createElement('div');line.className='log-line '+level;
+  const time=document.createElement('span');time.className='time';time.textContent='['+nowTime()+']';line.append(time,document.createTextNode(text));box.append(line);logCount++;
+  while(box.childElementCount>400)box.firstElementChild.remove();box.scrollTop=box.scrollHeight;
+}
+function openLogs(autofocus=false){$('log-modal').classList.remove('hide');$('log-state').textContent=busy?'RUNNING':'READY';if(autofocus)$('log-foot-status').textContent='กำลังทำงาน — รายละเอียดจะแสดงตรงนี้แบบเรียลไทม์';}
+function closeLogs(){$('log-modal').classList.add('hide')}
+N.on('progress',p=>{const label=p.label+(p.total?` ${p.done}/${p.total}`:' ...');st(label);bar(p.total?p.done/p.total:.05);logLine(label,'info');if(!$('log-modal').classList.contains('hide'))$('log-state').textContent='RUNNING'});
+N.on('installed',d=>{const msg=`เตรียม Instance “${d.name}” เรียบร้อย (${d.versionId||'version ready'})`;st(msg,'ok');logLine(msg,'ok')});
+N.on('game-log',p=>{if(p?.line)logLine('[MINECRAFT] '+p.line,'game')});
+N.on('launcher-log',p=>{if(p?.line)logLine('[NEXIA] '+p.line,p.kind||'info')});
+N.on('game-state',p=>{if(p?.running){$('log-state').textContent='RUNNING';$('log-foot-status').textContent='Minecraft กำลังทำงาน · '+(p.username||'Microsoft account')}else if(p?.id){$('log-state').textContent='STOPPED';$('log-foot-status').textContent='Minecraft ปิดแล้ว (code '+(p.code??'unknown')+')'}});
+N.on('update-available',u=>{const b=$('upd');b.style.display='block';b.textContent='มี Nexia เวอร์ชัน '+u.version+' '+u.notes;const a=document.createElement('a');a.textContent='อัปเดตเลย';a.onclick=async()=>{a.textContent='กำลังโหลด...';try{await N.invoke('update:apply')}catch(e){a.textContent='ล้มเหลว: '+clean(e)}};b.appendChild(a)});
+function showUser(u){
+  $('login').classList.toggle('hide',!!u);$('app').classList.toggle('hide',!u);const a=$('acc');a.textContent='';if(!u)return;
+  const img=document.createElement('img');img.src=u.avatar?`https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=64`:'https://cdn.discordapp.com/embed/avatars/0.png';
+  const d=document.createElement('div'),name=document.createElement('span'),out=document.createElement('button');name.textContent=u.name;out.textContent='ออกจากระบบ';
+  out.onclick=async()=>{try{await N.invoke('auth:logout');showUser(null);latestInstances=[];selectedInstance=null;st('');bar(0)}catch(e){st(clean(e),'er')}};d.append(name,out);a.append(img,d);
+}
+$('btn-login').onclick=async()=>{$('btn-login').disabled=true;$('lbl').textContent='รอยืนยันในเบราว์เซอร์...';$('lerr').textContent='';try{showUser(await N.invoke('auth:login'));st('');await loadInstances()}catch(e){$('lerr').textContent=clean(e)}finally{$('lbl').textContent='เข้าสู่ระบบด้วย Discord';$('btn-login').disabled=false}};
+$('rf').onclick=()=>{if(!busy)loadInstances()};
+const chip=t=>{const s=document.createElement('span');s.textContent=String(t??'');return s};
+function imageNode(url,cls,alt){if(!(/^https:\/\//i.test(String(url||''))||/^data:image\/(jpeg|png|webp);base64,/i.test(String(url||''))))return null;const img=document.createElement('img');img.className=cls||'';img.alt=alt||'';img.loading='lazy';img.referrerPolicy='no-referrer';img.src=url;img.onerror=()=>img.remove();return img}
+function safeSetImg(node,url){if(!node)return;if(/^https:\/\//i.test(String(url||''))||/^data:image\/(jpeg|png|webp);base64,/i.test(String(url||''))){node.src=url;node.classList.remove('hide')}else{node.removeAttribute('src');node.classList.add('hide')}}
+function chosenArtwork(i){return i.bannerUrl||i.artworkUrl||i.coverUrl||i.iconUrl||''}
+function svgButton(label,svgText,handler){const b=document.createElement('button');b.className='icon-btn';b.type='button';b.title=label;b.setAttribute('aria-label',label);b.innerHTML=svgText;b.addEventListener('click',e=>{e.stopPropagation();handler(e)});return b}
+const editSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>';
+const gearSvg='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1.1a1.8 1.8 0 0 1-2.5 2.5l-.1-.1a1.7 1.7 0 0 0-2.9 1.2v.2a1.8 1.8 0 0 1-3.6 0v-.2a1.7 1.7 0 0 0-2.9-1.2l-.1.1a1.8 1.8 0 0 1-2.5-2.5l.1-.1a1.7 1.7 0 0 0-1.2-2.9H3.6a1.8 1.8 0 0 1 0-3.6h.2a1.7 1.7 0 0 0 1.2-2.9l-.1-.1a1.8 1.8 0 0 1 2.5-2.5l.1.1a1.7 1.7 0 0 0 2.9-1.2v-.2a1.8 1.8 0 0 1 3.6 0v.2a1.7 1.7 0 0 0 2.9 1.2l.1-.1a1.8 1.8 0 0 1 2.5 2.5l-.1.1a1.7 1.7 0 0 0 1.2 2.9h.2a1.8 1.8 0 0 1 0 3.6h-.2a1.7 1.7 0 0 0-1.2 2.9Z"/></svg>';
+function card(i,n){
+  const root=document.createElement('article');root.className='inst';root.tabIndex=0;root.setAttribute('role','button');root.setAttribute('aria-label','เปิด '+i.name);root.style.animationDelay=(n*45)+'ms';
+  const art=document.createElement('div');art.className='inst-art';const image=imageNode(chosenArtwork(i),'',i.name+' cover');if(image)art.append(image);
+  const caption=document.createElement('div');caption.className='inst-caption';const title=document.createElement('h3');title.textContent=i.name;const tags=document.createElement('div');tags.className='tags';tags.append(chip(i.mc),chip(i.loader+(i.loaderVersion&&i.loader!=='vanilla'?' '+i.loaderVersion:'')));caption.append(title,tags);
+  const tools=document.createElement('div');tools.className='inst-hover-tools';tools.append(svgButton('เปลี่ยน Banner',editSvg,()=>{artworkTargetId=i.id;$('art-banner-file').click()}),svgButton('ตั้งค่า Instance',gearSvg,()=>openInstance(i.id).then(openSettings))); 
+  const hint=document.createElement('div');hint.className='inst-drop-hint';hint.textContent='ลากรูปมาวางเพื่อเปลี่ยน Banner ของ Instance';root.append(art,caption,tools,hint);
+  root.addEventListener('click',e=>{if(e.target.closest('button'))return;openInstance(i.id)});root.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openInstance(i.id)}});
+  root.addEventListener('dragover',e=>{if(Array.from(e.dataTransfer?.types || []).includes('Files')){e.preventDefault();root.classList.add('drop-ready')}});
+  root.addEventListener('dragleave',e=>{if(!root.contains(e.relatedTarget))root.classList.remove('drop-ready')});
+  root.addEventListener('drop',e=>{if(!e.dataTransfer?.files?.length)return;e.preventDefault();e.stopPropagation();root.classList.remove('drop-ready');artworkTargetId=i.id;setArtworkFromFile(e.dataTransfer.files[0],i.id,'banner')});
+  root.addEventListener('mousemove',e=>{const b=root.getBoundingClientRect();root.style.setProperty('--x',(e.clientX-b.left)+'px');root.style.setProperty('--y',(e.clientY-b.top)+'px')});
+  return root;
+}
+async function loadInstances(){
+  const box=$('ilist'),wasDetail=!$('instance-detail').classList.contains('hide'),selectedId=selectedInstance?.id;box.textContent='';for(let k=0;k<3;k++){const sk=document.createElement('div');sk.className='sk';box.append(sk)}
+  let remote=null,remoteErr='';try{remote=await N.invoke('instances:list')}catch(e){remoteErr=clean(e);st(remoteErr,'er');logLine('โหลดรายการ Instance ไม่สำเร็จ: '+remoteErr,'err')}
+  const local=await N.invoke('custom:list').catch(e=>{logLine('โหลด Instance ในเครื่องไม่สำเร็จ: '+clean(e),'err');return []});box.textContent='';
+  if(remote&&!remote.whitelisted){const c=document.createElement('div');c.className='card';c.textContent='บัญชี Discord นี้ยังไม่ได้รับสิทธิ์ Instance ของเซิร์ฟเวอร์ — แจ้งแอดมินให้เพิ่ม Whitelist ด้วยชื่อ: '+remote.name+' (ยังสร้าง Instance ของตัวเองได้)';const b=document.createElement('button');b.className='btn o s';b.style.cssText='display:flex;margin-top:14px';b.textContent='คัดลอก Discord ID';b.onclick=()=>navigator.clipboard.writeText(remote.id).then(()=>b.textContent='คัดลอกแล้ว ✓');c.append(b);box.append(c)}
+  latestInstances=[...(remote&&remote.whitelisted?remote.instances:[]),...local];refreshLibraryTargets();$('cnt').textContent=latestInstances.length?String(latestInstances.length):'';
+  if(!latestInstances.length){const c=document.createElement('div');c.className='card mu';c.textContent=remoteErr?'โหลด Instance ไม่สำเร็จ ตรวจสอบการเชื่อมต่อแล้วกดรีเฟรช':(remote&&!remote.whitelisted?'สร้าง Instance ของคุณเองได้จากปุ่มด้านบน':'ยังไม่มี Instance — กด “+ สร้าง Instance” เพื่อสร้างของคุณเอง');box.append(c)}else latestInstances.forEach((i,n)=>box.append(card(i,n)));
+  if(selectedId){selectedInstance=latestInstances.find(i=>i.id===selectedId)||null;if(wasDetail&&selectedInstance)await renderInstanceDetail();else if(wasDetail&&!selectedInstance)backToInstances()}
+}
+function setPage(page){
+  currentPage=page;const lib=page==='library';$('instances-page').classList.toggle('hide',lib);$('library-page').classList.toggle('hide',!lib);
+  $('nav-instances').classList.toggle('navactive',!lib);$('nav-library').classList.toggle('navactive',lib);$('cr').classList.toggle('hide',lib||!!selectedInstance);$('rf').classList.toggle('hide',lib||!!selectedInstance);$('app-header').classList.toggle('hide',!lib&&!!selectedInstance);
+  $('page-title').textContent=lib?'Library':'Instances';$('page-subtitle').textContent=lib?'ค้นหา Mods, Resource Packs และ Shaders จาก Modrinth แล้วติดตั้งลง Instance':'เลือก Instance จากปกของคุณ คลิกเพื่อดูรายละเอียด';
+  if(lib){refreshLibraryTargets();if(!libraryLoadedOnce){libraryLoadedOnce=true;searchLibrary()}}
+}
+function backToInstances(){selectedInstance=null;$('instance-detail').classList.add('hide');$('ilist').classList.remove('hide');$('app-header').classList.remove('hide');$('cr').classList.remove('hide');$('rf').classList.remove('hide');$('settings-modal').classList.add('hide');currentDetailTab='info'}
+$('detail-back').onclick=backToInstances;
+async function openInstance(id){const inst=latestInstances.find(x=>x.id===id);if(!inst)return;selectedInstance=inst;$('ilist').classList.add('hide');$('instance-detail').classList.remove('hide');$('app-header').classList.add('hide');$('cr').classList.add('hide');$('rf').classList.add('hide');await renderInstanceDetail()}
+function detailMeta(inst){const meta=$('detail-meta');meta.textContent='';meta.append(chip('◈ '+inst.mc),chip('⚙ '+inst.loader+(inst.loaderVersion&&inst.loader!=='vanilla'?' '+inst.loaderVersion:'')),chip(inst.gameInstalled?'INSTALLED':'NOT INSTALLED'))}
+async function renderInstanceDetail(){
+  if(!selectedInstance)return;const i=selectedInstance;$('detail-name').textContent=i.name;detailMeta(i);safeSetImg($('detail-banner'),i.bannerUrl||i.coverUrl||i.artworkUrl||i.iconUrl||'');safeSetImg($('detail-cover'),i.iconUrl||i.artworkUrl||i.coverUrl||i.bannerUrl||'');
+  $('detail-hero').classList.remove('drag-ready');
+  try{detailFiles=await N.invoke('instance:files',i.id)}catch(e){detailFiles={mods:[],resourcepacks:[],shaders:[]};logLine('อ่านรายการไฟล์ Instance ไม่สำเร็จ: '+clean(e),'err')}
+  for(const type of ['mods','resourcepacks','shaders'])$('detail-count-'+type).textContent=(detailFiles[type]||[]).length;
+  renderDetailTab(currentDetailTab);
+}
+function makeInfo(label,value){const d=document.createElement('div');d.className='info-item';const l=document.createElement('span');l.textContent=label;const v=document.createElement('strong');v.textContent=value||'—';d.append(l,v);return d}
+function renderDetailTab(tab){
+  currentDetailTab=tab;document.querySelectorAll('.detail-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));const box=$('detail-content');box.textContent='';if(!selectedInstance)return;const i=selectedInstance;
+  if(tab==='info'){
+    const title=document.createElement('h3');title.className='detail-section-title';title.textContent='▤ DESCRIPTION';box.append(title);
+    const desc=document.createElement('p');desc.className='detail-desc';desc.textContent=i.description||'ยังไม่มีคำอธิบายสำหรับ Instance นี้';box.append(desc);
+    const infoTitle=document.createElement('h3');infoTitle.className='detail-section-title';infoTitle.textContent='⇩ INSTANCE INFO';box.append(infoTitle);
+    const grid=document.createElement('div');grid.className='detail-info-grid';grid.append(makeInfo('Minecraft',i.mc),makeInfo('Loader',i.loader+(i.loaderVersion&&i.loader!=='vanilla'?' '+i.loaderVersion:'')),makeInfo('Instance ID',i.id),makeInfo('Allocated RAM',((Number(i.ramMb)||4096)/1024).toFixed(1)+' GB'),makeInfo('Mods',(detailFiles.mods||[]).length+' files'),makeInfo('Resource Packs',(detailFiles.resourcepacks||[]).length+' files'),makeInfo('Shaders',(detailFiles.shaders||[]).length+' files'),makeInfo('Install status',i.gameInstalled?'Installed':'Not installed'));box.append(grid);
+    const actions=document.createElement('div');actions.className='detail-file-toolbar';actions.style.marginTop='15px';const folder=document.createElement('button');folder.className='btn o s';folder.textContent='เปิดโฟลเดอร์ Instance';folder.onclick=()=>N.invoke('instance:open-folder',i.id,'root').catch(e=>st(clean(e),'er'));const lib=document.createElement('button');lib.className='btn s';lib.textContent='เพิ่ม Mods / Packs / Shaders';lib.onclick=()=>openLibraryForType('mods');actions.append(folder,lib);box.append(actions);return;
+  }
+  const type=tab;const titles={mods:'INSTALLED MODS',resourcepacks:'INSTALLED RESOURCE PACKS',shaders:'INSTALLED SHADERS'};const toolbar=document.createElement('div');toolbar.className='detail-file-toolbar';const t=document.createElement('h3');t.className='detail-section-title';t.textContent='▤ '+titles[type];t.style.margin='0';const count=document.createElement('span');count.className='muted';count.textContent=(detailFiles[type]||[]).length+' files';const open=document.createElement('button');open.className='btn o s';open.textContent='เปิดโฟลเดอร์';open.onclick=()=>N.invoke('instance:open-folder',i.id,type).catch(e=>st(clean(e),'er'));const add=document.createElement('button');add.className='btn s';add.textContent='ค้นหาใน Modrinth';add.onclick=()=>openLibraryForType(type);toolbar.append(t,count,open,add);box.append(toolbar);
+  const list=document.createElement('div');list.className='detail-file-list';const files=detailFiles[type]||[];
+  if(!files.length){const empty=document.createElement('div');empty.className='detail-empty';empty.textContent=type==='mods'?'ยังไม่พบไฟล์มอดในโฟลเดอร์นี้':type==='resourcepacks'?'ยังไม่มี Resource Pack':'ยังไม่มี Shader Pack';list.append(empty)}else files.forEach(f=>{const row=document.createElement('div');row.className='detail-file';const symbol=document.createElement('span');symbol.className='file-symbol';symbol.textContent=type==='mods'?'JAR':'ZIP';const name=document.createElement('span');name.className='file-name';name.title=f.name;name.textContent=f.name;const size=document.createElement('span');size.className='file-size';size.textContent=formatBytes(f.size);row.append(symbol,name,size);list.append(row)});box.append(list);
+}
+function formatBytes(n){if(!n)return '0 B';const units=['B','KB','MB','GB'];let x=n,u=0;while(x>=1024&&u<units.length-1){x/=1024;u++}return x.toFixed(u?1:0)+' '+units[u]}
+$('detail-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(b)renderDetailTab(b.dataset.tab)});
+$('nav-instances').onclick=()=>setPage('instances');$('nav-library').onclick=()=>setPage('library');
+function refreshLibraryTargets(){const sel=$('lib-target');if(!sel)return;const prev=sel.value;sel.textContent='';const ready=latestInstances.filter(i=>i.gameInstalled);if(!latestInstances.length){const op=document.createElement('option');op.value='';op.textContent='ยังไม่มี Instance';sel.append(op);return}latestInstances.forEach(i=>{const op=document.createElement('option');op.value=i.id;op.textContent=`${i.name} · ${i.mc} · ${i.loader}${i.gameInstalled?'':' (ต้องติดตั้งก่อน)'}`;op.disabled=!i.gameInstalled;sel.append(op)});const choose=latestInstances.find(i=>i.id===prev&&i.gameInstalled)||(selectedInstance?.gameInstalled?selectedInstance:null)||ready[0]||latestInstances[0];if(choose)sel.value=choose.id;applyLibraryTarget()}
+function applyLibraryTarget(){const target=latestInstances.find(i=>i.id===$('lib-target').value);$('lib-delete-instance').classList.toggle('hide',!(target?.custom||target?.gameInstalled));$('lib-delete-instance').textContent=target?.custom?'ลบ Instance ที่เลือก':'ลบไฟล์ Instance ในเครื่อง';if(!target){updateProjectInstallButtons();return}$('lib-mc').value=target.mc||'1.20.1';const l=String(target.loader||'').toLowerCase();$('lib-loader').value=['fabric','forge','neoforge','quilt'].includes(l)?l:'any';updateProjectInstallButtons()}
+function projectCompatible(target,type){if(!target||!target.gameInstalled)return false;const l=String(target.loader||'').toLowerCase();return !(type==='mods'&&l==='vanilla')}
+function updateProjectInstallButtons(){const target=latestInstances.find(i=>i.id===$('lib-target').value);document.querySelectorAll('#lib-results .project-card').forEach(c=>{const b=c.querySelector('.install-btn');if(!b)return;b.disabled=libraryInstalling||!projectCompatible(target,c.dataset.projectType);b.title=!target||!target.gameInstalled?'ต้องเลือก Instance ที่ติดตั้งแล้ว':(!projectCompatible(target,c.dataset.projectType)?'Mods ต้องใช้ Fabric / Forge / NeoForge / Quilt':'ติดตั้งทันที')})}
+function openLibraryForType(type){libraryLoadedOnce=true;setPage('library');$('lib-type').value=type;$('lib-loader').disabled=type!=='mods';if(selectedInstance&&selectedInstance.gameInstalled)$('lib-target').value=selectedInstance.id;applyLibraryTarget();searchLibrary()}
+function renderProject(p){
+  const c=document.createElement('article');c.className='project-card';c.dataset.projectType=p.type;const ban=imageNode(p.bannerUrl,'project-banner',p.title+' banner');if(ban)c.append(ban);
+  const head=document.createElement('div');head.className='project-head';const cover=imageNode(p.coverUrl||p.iconUrl,'project-cover',p.title+' cover');if(cover)head.append(cover);
+  const hg=document.createElement('div');hg.className='project-heading';const h=document.createElement('h3');h.textContent=p.title||'Untitled';const meta=document.createElement('div');meta.className='project-meta';meta.append(chip('Modrinth'),chip(({mods:'MOD',resourcepacks:'RESOURCE PACK',shaders:'SHADER'})[p.type]||p.type));hg.append(h,meta);head.append(hg);c.append(head);
+  const desc=document.createElement('div');desc.className='project-desc';desc.textContent=p.description||'ไม่มีคำอธิบาย';c.append(desc);
+  const stats=document.createElement('div');stats.className='project-stats';const author=document.createElement('span');author.textContent='โดย '+(p.author||'ไม่ทราบผู้สร้าง');const downloads=document.createElement('span');downloads.textContent=(Number(p.downloads)||0).toLocaleString('en-US')+' downloads';stats.append(author,downloads);c.append(stats);
+  const actions=document.createElement('div');actions.className='project-actions';const install=document.createElement('button');install.className='btn install-btn';install.textContent='ติดตั้งทันที';const target=latestInstances.find(i=>i.id===$('lib-target').value&&projectCompatible(i,p.type));install.disabled=!target;install.title=target?'ติดตั้งลง '+target.name:'เลือก Instance ที่ติดตั้งแล้วและรองรับประเภทนี้ก่อน';
+  install.onclick=async()=>{if(libraryInstalling)return;const targetInst=latestInstances.find(i=>i.id===$('lib-target').value&&projectCompatible(i,p.type));if(!targetInst){$('lib-status').textContent='เลือก Instance ที่ติดตั้งแล้วและรองรับประเภทนี้ก่อน';return}libraryInstalling=true;updateProjectInstallButtons();install.textContent='กำลังติดตั้ง...';st('กำลังติดตั้ง '+p.title);bar(.03);logLine(`ติดตั้งจาก Modrinth: ${p.title} → ${targetInst.name}`);try{const out=await N.invoke('library:install',{instanceId:targetInst.id,project:p});$('lib-status').textContent=`ติดตั้ง ${out.title} สำเร็จใน ${targetInst.name} (${out.count} ไฟล์ รวม Required Dependencies)`;st('ติดตั้ง '+out.title+' เสร็จแล้ว','ok');bar(1);logLine('ติดตั้ง '+out.title+' เสร็จแล้ว ('+out.count+' ไฟล์)','ok');if(selectedInstance?.id===targetInst.id)await renderInstanceDetail()}catch(e){$('lib-status').textContent=clean(e);st(clean(e),'er');bar(0);logLine('ติดตั้งไม่สำเร็จ: '+clean(e),'err')}finally{install.textContent='ติดตั้งทันที';libraryInstalling=false;updateProjectInstallButtons()}};
+  const open=document.createElement('button');open.className='btn o';open.textContent='ดูหน้า Modrinth';open.onclick=()=>N.invoke('library:open',p.url).catch(e=>{$('lib-status').textContent=clean(e)});actions.append(install,open);c.append(actions);return c;
+}
+async function searchLibrary({append=false}={}){
+  if(librarySearching)return;librarySearching=true;const btn=$('lib-search'),more=$('lib-more'),offset=append?searchOffset:0;btn.disabled=true;btn.textContent='กำลังค้นหา...';more.disabled=true;
+  const options={query:$('lib-q').value,type:$('lib-type').value,gameVersion:$('lib-mc').value.trim(),loader:$('lib-loader').value,limit:100,offset};const box=$('lib-results');if(!append)box.textContent='';$('lib-status').textContent=`กำลังค้นหา Modrinth (${append?'หน้าเพิ่มเติม':'หน้าแรก'})...`;
+  try{const res=await N.invoke('library:search',options);const items=Array.isArray(res)?res:(res.items||[]);searchTotal=Math.max(items.length,Number(res.totalHits)||0);searchOffset=offset+items.length;if(items.length){items.forEach(p=>box.append(renderProject(p)));$('lib-status').textContent=`แสดง ${Math.min(searchOffset,searchTotal).toLocaleString()} จาก ${searchTotal.toLocaleString()} รายการบน Modrinth`;more.classList.toggle('hide',searchOffset>=searchTotal||items.length===0)}else if(!append){const empty=document.createElement('div');empty.className='lib-empty';empty.textContent='ไม่พบรายการที่ตรงกัน ลองเปลี่ยนคำค้นหา เวอร์ชัน หรือประเภท';box.append(empty);$('lib-status').textContent='ไม่พบรายการบน Modrinth';more.classList.add('hide')}else{$('lib-status').textContent=`แสดงครบ ${searchOffset.toLocaleString()} รายการแล้ว`;more.classList.add('hide')}}catch(e){$('lib-status').textContent=clean(e);logLine('ค้นหา Modrinth ไม่สำเร็จ: '+clean(e),'err')}finally{btn.disabled=false;btn.textContent='ค้นหา';more.disabled=false;librarySearching=false;updateProjectInstallButtons()}
+}
+$('lib-search').onclick=()=>searchLibrary();$('lib-more').onclick=()=>searchLibrary({append:true});$('lib-q').addEventListener('keydown',e=>{if(e.key==='Enter')searchLibrary()});$('lib-target').onchange=applyLibraryTarget;$('lib-type').onchange=()=>{$('lib-loader').disabled=$('lib-type').value!=='mods';searchLibrary()};$('lib-refresh').onclick=()=>loadInstances();$('lib-delete-instance').onclick=async()=>{const target=latestInstances.find(i=>i.id===$('lib-target').value);if(!target||(!target.custom&&!target.gameInstalled))return;const message=target.custom?`ลบ Instance “${target.name}” ออกจาก Library ใช่ไหม?\nรายการและโปรไฟล์จะถูกลบ แต่โฟลเดอร์เกม/โลกจะยังอยู่`:`ลบไฟล์ติดตั้งของ “${target.name}” ในเครื่องใช่ไหม?\nการกระทำนี้จะลบ Mods, Packs, Configs และโลกที่เก็บไว้ในโฟลเดอร์ Instance และย้อนกลับไม่ได้`;if(!confirm(message))return;const returnPage=currentPage;try{if(selectedInstance?.id===target.id)backToInstances();if(target.custom)await N.invoke('custom:delete',target.id);else await N.invoke('instance:remove-local',target.id);await loadInstances();setPage(returnPage);$('lib-status').textContent=target.custom?'ลบ Instance ออกจากรายการแล้ว (โฟลเดอร์เกมยังอยู่)':'ลบไฟล์ Instance ในเครื่องแล้ว';logLine('จัดการ Instance '+target.name+' เสร็จแล้ว','ok')}catch(e){$('lib-status').textContent=clean(e);logLine('ลบ Instance ไม่สำเร็จ: '+clean(e),'err')}};
+function openSettings(){if(!selectedInstance)return;$('settings-modal').classList.remove('hide');$('s-error').textContent='';$('s-name').value=selectedInstance.name||'';$('s-delete').classList.toggle('hide',!selectedInstance.custom&&!selectedInstance.gameInstalled);$('s-delete').textContent=selectedInstance.custom?'ลบ Instance จาก Library':'ลบไฟล์ Instance ในเครื่อง';N.invoke('instance:ram:get',selectedInstance.id,selectedInstance.ramMb).then(d=>{$('s-ram').min='1024';$('s-ram').max=String(Math.max(1024,d.maxMb));$('s-ram').step='512';$('s-ram').value=String(Math.min(d.maxMb,Math.max(1024,d.ramMb)));updateRamLabel();$('s-ram-note').textContent=`เครื่องนี้มี RAM ทั้งหมดประมาณ ${(d.totalMb/1024).toFixed(1)} GB · ให้ Minecraft ใช้ได้สูงสุด ${(d.maxMb/1024).toFixed(1)} GB เพื่อเหลือหน่วยความจำให้ Windows`} ).catch(e=>$('s-error').textContent=clean(e))}
+$('detail-settings').onclick=openSettings;$('detail-logs').onclick=()=>openLogs(false);$('detail-play').onclick=async()=>{
+  if(!selectedInstance||busy)return;const inst=selectedInstance;openLogs(true);setBusy(true);$('log-state').textContent='STARTING';$('log-box').textContent='';logCount=0;logLine('เริ่มเตรียม Instance: '+inst.name);logLine(`Minecraft ${inst.mc} · ${inst.loader}${inst.loaderVersion?' '+inst.loaderVersion:''}`);logLine('Nexia จะดาวน์โหลดไฟล์ที่จำเป็นและเปิดเกมเอง ไม่ต้องติดตั้ง Minecraft Launcher ทางการ');st('กำลังเตรียม '+inst.name+'...');bar(.01);
+  try{const ram=await N.invoke('instance:ram:get',inst.id,inst.ramMb);const result=await N.invoke('minecraft:play',inst.id,ram.ramMb);logLine('เริ่มเกมแล้ว บัญชี Microsoft: '+result.username,'ok');$('log-state').textContent='RUNNING';$('log-foot-status').textContent='Minecraft กำลังทำงาน · '+result.username;st('กำลังเล่น '+inst.name,'ok');bar(1);await loadInstances()}catch(e){const msg=clean(e);logLine('ERROR: '+msg,'err');$('log-state').textContent='ERROR';$('log-foot-status').textContent=msg;st(msg,'er');bar(0)}finally{setBusy(false);$('detail-play').disabled=false}
+};
+$('mc-signout').onclick=async()=>{try{await N.invoke('minecraft:logout');logLine('ลบบัญชี Microsoft ที่บันทึกไว้แล้ว — กด PLAY เพื่อเลือกบัญชีอื่น','ok');$('log-foot-status').textContent='บัญชี Microsoft ถูกออกจากระบบแล้ว'}catch(e){logLine(clean(e),'err')}};
+function updateRamLabel(){$('s-ram-label').textContent=(Number($('s-ram').value)/1024).toFixed(1)+' GB'};$('s-ram').addEventListener('input',updateRamLabel);
+$('s-save').onclick=async()=>{if(!selectedInstance)return;const b=$('s-save');b.disabled=true;$('s-error').textContent='';try{const d=await N.invoke('instance:ram:set',selectedInstance.id,Number($('s-ram').value));selectedInstance.ramMb=d.ramMb;const ix=latestInstances.findIndex(x=>x.id===selectedInstance.id);if(ix>=0)latestInstances[ix].ramMb=d.ramMb;$('s-ram-label').textContent=(d.ramMb/1024).toFixed(1)+' GB';logLine('บันทึก RAM = '+d.ramMb+' MB สำหรับ '+selectedInstance.name,'ok');st('บันทึกค่า RAM แล้ว — จะใช้เมื่อกด PLAY','ok');await renderInstanceDetail()}catch(e){$('s-error').textContent=clean(e);logLine('บันทึก RAM ไม่สำเร็จ: '+clean(e),'err')}finally{b.disabled=false}};
+$('s-close').onclick=()=>$('settings-modal').classList.add('hide');$('settings-modal').addEventListener('mousedown',e=>{if(e.target===$('settings-modal'))$('settings-modal').classList.add('hide')});
+$('s-change-icon').onclick=()=>{if(selectedInstance){artworkTargetId=selectedInstance.id;$('art-icon-file').click()}};
+$('s-change-banner').onclick=()=>{if(selectedInstance){artworkTargetId=selectedInstance.id;$('art-banner-file').click()}};
+$('s-reset-icon').onclick=async()=>{if(!selectedInstance)return;const id=selectedInstance.id;try{await N.invoke('artwork:clear',id,'icon');const i=latestInstances.find(x=>x.id===id);if(i)i.iconUrl='';if(selectedInstance?.id===id)selectedInstance.iconUrl='';await loadInstances();$('s-error').textContent='คืน Icon จากข้อมูลเซิร์ฟเวอร์/ค่าเดิมแล้ว'}catch(e){$('s-error').textContent=clean(e)}};
+$('s-reset-banner').onclick=async()=>{if(!selectedInstance)return;const id=selectedInstance.id;try{await N.invoke('artwork:clear',id,'banner');const i=latestInstances.find(x=>x.id===id);if(i)i.bannerUrl='';if(selectedInstance?.id===id)selectedInstance.bannerUrl='';await loadInstances();$('s-error').textContent='คืน Banner จากข้อมูลเซิร์ฟเวอร์/ค่าเดิมแล้ว'}catch(e){$('s-error').textContent=clean(e)}};
+$('s-rename').onclick=async()=>{if(!selectedInstance)return;const id=selectedInstance.id,b=$('s-rename');b.disabled=true;$('s-error').textContent='';try{const result=await N.invoke('instance:rename',id,$('s-name').value);const ix=latestInstances.findIndex(x=>x.id===id);if(ix>=0)latestInstances[ix].name=result.name;if(selectedInstance?.id===id)selectedInstance.name=result.name;$('s-name').value=result.name;await loadInstances();logLine('เปลี่ยนชื่อ Instance เป็น '+result.name,'ok');$('s-error').style.color='#a8dcb0';$('s-error').textContent='บันทึกชื่อแล้ว'}catch(e){$('s-error').style.color='#e99';$('s-error').textContent=clean(e)}finally{b.disabled=false}};
+$('s-delete').onclick=async()=>{if(!selectedInstance)return;const i=selectedInstance;if(!i.custom&&!i.gameInstalled)return;const message=i.custom?`ลบ Instance “${i.name}” จาก Library ใช่ไหม?\n\nจะลบรายการและโปรไฟล์เท่านั้น ไม่ลบไฟล์เกมหรือโลกในโฟลเดอร์`:`ลบไฟล์ติดตั้งของ “${i.name}” ในเครื่องใช่ไหม?\n\nจะลบ Mods, Resource Packs, Shaders, Configs และโลกที่อยู่ในโฟลเดอร์ Instance อย่างถาวร`;if(!confirm(message))return;try{if(i.custom)await N.invoke('custom:delete',i.id);else await N.invoke('instance:remove-local',i.id);$('settings-modal').classList.add('hide');logLine('ลบข้อมูล Instance '+i.name+' แล้ว','ok');backToInstances();await loadInstances();st('จัดการ Instance แล้ว','ok')}catch(e){$('s-error').textContent=clean(e)}};
+async function prepareImageData(file,kind='icon'){
+  if(!file)throw new Error('ยังไม่ได้เลือกไฟล์รูป');
+  if(!/^image\/(png|jpeg|webp)$/i.test(file.type))throw new Error('รองรับรูป PNG, JPG หรือ WEBP เท่านั้น');
+  if(file.size>20*1024*1024)throw new Error('ไฟล์ใหญ่เกิน 20 MB กรุณาเลือกภาพที่เล็กกว่า');
+  let bitmap;try{bitmap=await createImageBitmap(file)}catch{throw new Error('เปิดไฟล์รูปนี้ไม่ได้')}
+  const banner=kind==='banner',maxW=banner?1800:720,maxH=banner?1000:720,scale=Math.min(1,maxW/bitmap.width,maxH/bitmap.height),canvas=document.createElement('canvas');
+  canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+  const ctx=canvas.getContext('2d');if(!ctx){bitmap.close?.();throw new Error('สร้าง Canvas สำหรับรูปไม่สำเร็จ')}
+  ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();return canvas.toDataURL('image/jpeg',.86);
+}
+async function setArtworkFromFile(file,id,kind='icon'){
+  if(!file||!id)return;
+  try{
+    st('กำลังประมวลผล '+(kind==='banner'?'Banner':'Icon')+'...');const data=await prepareImageData(file,kind);const saved=await N.invoke('artwork:set',id,data,kind);
+    const field=kind==='banner'?'bannerUrl':'iconUrl',ix=latestInstances.findIndex(x=>x.id===id);if(ix>=0)latestInstances[ix][field]=saved;
+    if(selectedInstance?.id===id)selectedInstance[field]=saved;
+    st('อัปโหลด '+(kind==='banner'?'Banner':'Icon')+' แล้ว','ok');logLine('บันทึกรูป '+kind+' ให้ Instance '+(latestInstances.find(x=>x.id===id)?.name||id),'ok');
+    await loadInstances();
+  }catch(e){st(clean(e),'er');logLine('เปลี่ยนรูปไม่สำเร็จ: '+clean(e),'err')}
+}
+$('art-icon-file').addEventListener('change',e=>{const file=e.target.files?.[0];if(file)setArtworkFromFile(file,artworkTargetId,'icon');e.target.value=''});
+$('art-banner-file').addEventListener('change',e=>{const file=e.target.files?.[0];if(file)setArtworkFromFile(file,artworkTargetId,'banner');e.target.value=''});
+$('detail-hero').addEventListener('dragover',e=>{if(Array.from(e.dataTransfer?.types||[]).includes('Files')){e.preventDefault();$('detail-hero').classList.add('drag-ready')}});
+$('detail-hero').addEventListener('dragleave',e=>{if(!$('detail-hero').contains(e.relatedTarget))$('detail-hero').classList.remove('drag-ready')});
+$('detail-hero').addEventListener('drop',e=>{if(!e.dataTransfer?.files?.length||!selectedInstance)return;e.preventDefault();e.stopPropagation();$('detail-hero').classList.remove('drag-ready');const kind=e.target.closest?.('#detail-cover')?'icon':'banner';setArtworkFromFile(e.dataTransfer.files[0],selectedInstance.id,kind)});
+$('detail-cover').addEventListener('dragover',e=>{if(Array.from(e.dataTransfer?.types||[]).includes('Files'))e.preventDefault()});
+$('detail-cover').addEventListener('drop',e=>{if(!e.dataTransfer?.files?.length||!selectedInstance)return;e.preventDefault();e.stopPropagation();setArtworkFromFile(e.dataTransfer.files[0],selectedInstance.id,'icon')});
+document.addEventListener('dragover',e=>{if(Array.from(e.dataTransfer?.types||[]).includes('Files'))e.preventDefault()});document.addEventListener('drop',e=>{if(e.dataTransfer?.files?.length)e.preventDefault()});
+$('log-close').onclick=closeLogs;$('log-modal').addEventListener('mousedown',e=>{if(e.target===$('log-modal'))closeLogs()});$('log-clear').onclick=()=>{$('log-box').textContent='';logCount=0};$('log-copy').onclick=async()=>{const txt=[...$('log-box').querySelectorAll('.log-line')].map(x=>x.textContent).join('\n');try{await navigator.clipboard.writeText(txt);$('log-foot-status').textContent='คัดลอก Log แล้ว'}catch{$('log-foot-status').textContent='คัดลอกไม่สำเร็จ'}};
+
+// ---- สร้าง Instance เอง ----
+let mcList=null,lvTok=0;
+const fill=(sel,arr)=>{sel.textContent="";arr.forEach(v=>{const o=document.createElement("option");o.value=o.textContent=v;sel.appendChild(o)})};
+async function refreshLv(){
+  const ld=$("c-ld").value,sel=$("c-lv"),tok=++lvTok;$("c-lvw").classList.toggle("hide",ld==="vanilla");if(ld==="vanilla"){$("c-ok").disabled=false;return;}
+  $("c-ok").disabled=true;sel.textContent="";const o=document.createElement("option");o.textContent="กำลังโหลด...";sel.appendChild(o);
+  try{const l=await N.invoke("custom:loaders",$("c-mc").value,ld);if(tok!==lvTok)return;
+    if(!l.length){sel.textContent="";const x=document.createElement("option");x.value="";x.textContent="ไม่รองรับ Minecraft เวอร์ชันนี้";sel.appendChild(x)}else{fill(sel,l);$("c-ok").disabled=false}
+  }catch(e){if(tok===lvTok){$("c-err").textContent=clean(e);sel.textContent=""}}
+}
+$("cr").onclick=async()=>{
+  if(busy)return;$('mdl').classList.remove('hide');$('c-err').textContent='';$('c-name').value='';$('c-desc').value='';$('c-icon').value='';$('c-banner').value='';createIconFile=null;createBannerFile=null;$('c-icon-file').value='';$('c-banner-file').value='';$('c-icon-name').textContent='ยังไม่ได้เลือกไฟล์';$('c-banner-name').textContent='ยังไม่ได้เลือกไฟล์';$('c-name').focus();
+  if(!mcList){try{mcList=await N.invoke("custom:versions")}catch(e){$("c-err").textContent=clean(e);return}}
+  if(!$("c-mc").options.length)fill($("c-mc"),mcList);
+  refreshLv();
+};
+$('c-mc').onchange=refreshLv;$('c-ld').onchange=refreshLv;
+$('c-icon-upload').onclick=()=>$('c-icon-file').click();$('c-banner-upload').onclick=()=>$('c-banner-file').click();
+$('c-icon-file').addEventListener('change',e=>{createIconFile=e.target.files?.[0]||null;$('c-icon-name').textContent=createIconFile?createIconFile.name:'ยังไม่ได้เลือกไฟล์'});
+$('c-banner-file').addEventListener('change',e=>{createBannerFile=e.target.files?.[0]||null;$('c-banner-name').textContent=createBannerFile?createBannerFile.name:'ยังไม่ได้เลือกไฟล์'});
+$('c-cancel').onclick=()=>$("mdl").classList.add("hide");
+$("mdl").onmousedown=e=>{if(e.target===$("mdl"))$("mdl").classList.add("hide")};
+$('c-ok').onclick=async()=>{
+  $('c-ok').disabled=true;$('c-err').textContent='';
+  try{
+    const iconData=createIconFile?await prepareImageData(createIconFile,'icon'):'';
+    const bannerData=createBannerFile?await prepareImageData(createBannerFile,'banner'):'';
+    await N.invoke('custom:create',{name:$('c-name').value,mc:$('c-mc').value,loader:$('c-ld').value,loaderVersion:$('c-lv').value,ramMb:+$('c-ram').value,description:$('c-desc').value,iconUrl:$('c-icon').value,bannerUrl:$('c-banner').value,iconData,bannerData});
+    $('mdl').classList.add('hide');st('สร้าง Instance แล้ว — กดเข้า Instance แล้วเลือก PLAY','ok');bar(0);logLine('สร้าง Instance '+$('c-name').value+' สำเร็จ','ok');await loadInstances();
+  }catch(e){$('c-err').textContent=clean(e);logLine('สร้าง Instance ไม่สำเร็จ: '+clean(e),'err')}
+  $('c-ok').disabled=false;
+};
+(async()=>{try{$("ver").textContent="V"+await N.invoke("app:version");const u=await N.invoke("auth:restore");showUser(u);if(u)await loadInstances();$('lib-loader').disabled=$('lib-type').value!=='mods';logLine('Nexia Launcher พร้อมใช้งาน')}catch(e){$('lerr').textContent=clean(e);logLine('เริ่มระบบไม่สำเร็จ: '+clean(e),'err')}})();
+</script></body></html>

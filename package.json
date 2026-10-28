@@ -1,0 +1,52 @@
+{
+  "name": "nexia-installer",
+  "productName": "Nexia Launcher",
+  "version": "0.5.2",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --x64 --publish never"
+  },
+  "dependencies": {
+    "minecraft-launcher-core": "3.18.2",
+    "msmc": "5.0.5"
+  },
+  "devDependencies": {
+    "electron": "33.2.1",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "studio.novalabs.nexiainstaller",
+    "productName": "Nexia Launcher",
+    "files": [
+      "main.js",
+      "preload.js",
+      "index.html",
+      "config.json",
+      "lib/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Nexia Launcher",
+      "uninstallDisplayName": "Nexia Launcher",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "Nexia-Launcher_${version}_x64-setup.exe",
+      "installerSidebar": "assets/installerSidebar.bmp",
+      "uninstallerSidebar": "assets/uninstallerSidebar.bmp",
+      "installerHeader": "assets/installerHeader.bmp"
+    }
+  }
+}
